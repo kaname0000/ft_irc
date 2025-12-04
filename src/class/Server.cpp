@@ -3,13 +3,81 @@
 #include "Channel.hpp"
 #include "Operation.hpp"
 
-Server::Server() {}
-Server::~Server() {}
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <cerrno>
+#include <cstring>
+#include <stdexcept>
+
+Server::Server(int port, const std::string &password)
+    : data(), _listen_fd(-1), _port(port), _password(password), _pfds()
+{
+    initSocket();
+}
+
+Server::~Server()
+{
+    if (_listen_fd != -1)
+        close(_listen_fd);
+}
+
+int Server::getListenFd() const { return _listen_fd; }
+const std::vector<struct pollfd> &Server::getPollFds() const { return _pfds; }
+
+void Server::initSocket()
+{
+    _listen_fd = socket(AF_INET, SOCK_STREAM, 0);
+    if (_listen_fd == -1)
+        throw std::runtime_error(std::string("socket() failed: ") + std::strerror(errno));
+
+    int opt = 1;
+    if (setsockopt(_listen_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1)
+    {
+        close(_listen_fd);
+        throw std::runtime_error(std::string("setsockopt() failed: ") + std::strerror(errno));
+    }
+
+    int flags = fcntl(_listen_fd, F_GETFL, 0);
+    if (flags == -1 || fcntl(_listen_fd, F_SETFL, flags | O_NONBLOCK) == -1)
+    {
+        close(_listen_fd);
+        throw std::runtime_error(std::string("fcntl() failed: ") + std::strerror(errno));
+    }
+
+    struct sockaddr_in addr;
+    std::memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_port = htons(_port);
+
+    if (bind(_listen_fd, reinterpret_cast<struct sockaddr *>(&addr), sizeof(addr)) == -1)
+    {
+        close(_listen_fd);
+        throw std::runtime_error(std::string("bind() failed: ") + std::strerror(errno));
+    }
+
+    if (listen(_listen_fd, SOMAXCONN) == -1)
+    {
+        close(_listen_fd);
+        throw std::runtime_error(std::string("listen() failed: ") + std::strerror(errno));
+    }
+
+    struct pollfd pfd;
+    pfd.fd = _listen_fd;
+    pfd.events = POLLIN;
+    pfd.revents = 0;
+    _pfds.push_back(pfd);
+}
 
 void Server::handleClientMessage(Client *client, const std::string &msg)
 {
     Operation operation(msg);
 
     CommandFunc command = operation.getCommandFunc();
-    command(client, operation, this->data);
+    if (command)
+        command(client, operation, this->data);
 }

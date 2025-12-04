@@ -1,6 +1,5 @@
-
-#ifndef OPERATOR_HPP
-#define OPERATOR_HPP
+#ifndef OPERATION_HPP
+#define OPERATION_HPP
 
 #include <iostream>
 #include <vector>
@@ -28,7 +27,7 @@ enum COMMAND
     UNKNOWN
 };
 
-typedef void (*CommandFunc)(Client *, Operation &, Data);
+typedef void (*CommandFunc)(Client *, Operation &, Data &);
 extern CommandFunc COMMANDFUNC[];
 
 class Operation
@@ -48,15 +47,15 @@ public:
     CommandFunc getCommandFunc() const;
 };
 
-CommandFunc nick();
-CommandFunc user();
-CommandFunc join();
-CommandFunc privmsg();
-CommandFunc part();
-CommandFunc quit();
-CommandFunc kick();
-CommandFunc invite();
-CommandFunc topic();
-CommandFunc mode();
+void nick(Client *, Operation &, Data &);
+void user(Client *, Operation &, Data &);
+void join(Client *, Operation &, Data &);
+void privmsg(Client *, Operation &, Data &);
+void part(Client *, Operation &, Data &);
+void quit(Client *, Operation &, Data &);
+void kick(Client *, Operation &, Data &);
+void invite(Client *, Operation &, Data &);
+void topic(Client *, Operation &, Data &);
+void mode(Client *, Operation &, Data &);
 
 #endif
