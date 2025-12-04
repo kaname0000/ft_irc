@@ -2,12 +2,19 @@
 NAME = ft_irc
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic
+INCLUDES = -Isrc/class
 
-SRCS = main.cpp
+SRCS = \
+	src/main.cpp \
+	src/class/Server.cpp \
+	src/class/Client.cpp \
+	src/class/Operation.cpp \
+	src/commad/nick.cpp
+
 OBJS = $(SRCS:.cpp=.o)
 
 .cpp.o:
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
 $(NAME): $(OBJS)
 	$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
