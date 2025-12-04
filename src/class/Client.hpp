@@ -35,6 +35,8 @@ public:
     // Buffer Operations(カナメさん用)
     void appendReceiveBuffer(const std::string &data);
     std::string extractCommand();
+
+    void sendMessage(const std::string &);
 };
 
 #endif

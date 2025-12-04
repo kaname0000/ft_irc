@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-struct Data;
+class Server;
 class Client;
 class Operation;
 
@@ -27,7 +27,7 @@ enum COMMAND
     UNKNOWN
 };
 
-typedef void (*CommandFunc)(Client *, Operation &, Data &);
+typedef void (*CommandFunc)(Client *, Operation &, Server *);
 extern CommandFunc COMMANDFUNC[];
 
 class Operation
@@ -47,15 +47,15 @@ public:
     CommandFunc getCommandFunc() const;
 };
 
-void nick(Client *, Operation &, Data &);
-void user(Client *, Operation &, Data &);
-void join(Client *, Operation &, Data &);
-void privmsg(Client *, Operation &, Data &);
-void part(Client *, Operation &, Data &);
-void quit(Client *, Operation &, Data &);
-void kick(Client *, Operation &, Data &);
-void invite(Client *, Operation &, Data &);
-void topic(Client *, Operation &, Data &);
-void mode(Client *, Operation &, Data &);
+void nick(Client *, Operation &, Server *);
+void user(Client *, Operation &, Server *);
+void join(Client *, Operation &, Server *);
+void privmsg(Client *, Operation &, Server *);
+void part(Client *, Operation &, Server *);
+void quit(Client *, Operation &, Server *);
+void kick(Client *, Operation &, Server *);
+void invite(Client *, Operation &, Server *);
+void topic(Client *, Operation &, Server *);
+void mode(Client *, Operation &, Server *);
 
 #endif

@@ -14,7 +14,7 @@
 #include <stdexcept>
 
 Server::Server(int port, const std::string &password)
-    : data(), _listen_fd(-1), _port(port), _password(password), _pfds()
+    : _clients(), _channels(), _listen_fd(-1), _port(port), _password(password), _pfds()
 {
     initSocket();
 }
@@ -26,7 +26,49 @@ Server::~Server()
 }
 
 int Server::getListenFd() const { return _listen_fd; }
+std::string Server::getPassword() const { return _password; }
 const std::vector<struct pollfd> &Server::getPollFds() const { return _pfds; }
+
+std::map<int, Client *> Server::getClients() const { return _clients; }
+Client *Server::getClient(const int fd) const
+{
+
+    std::map<int, Client *>::const_iterator it = _clients.find(fd);
+    if (it != _clients.end())
+    {
+        return it->second;
+    }
+
+    return NULL;
+}
+
+Client *Server::getClient(const std::string &target) const
+{
+    for (std::map<int, Client *>::const_iterator it = _clients.begin(); it != _clients.end(); ++it)
+    {
+
+        Client *client_ptr = it->second;
+
+        if (client_ptr != NULL && client_ptr->getNickname() == target)
+        {
+            return client_ptr;
+        }
+    }
+
+    return NULL;
+}
+
+std::map<std::string, Channel *> Server::getChannels() const { return _channels; }
+Channel *Server::getChannel(const std::string &target) const
+{
+    std::map<std::string, Channel *>::const_iterator it = _channels.find(target);
+    if (it != _channels.end())
+    {
+        return it->second;
+    }
+
+    return NULL;
+}
 
 void Server::initSocket()
 {
@@ -79,5 +121,5 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
 
     CommandFunc command = operation.getCommandFunc();
     if (command)
-        command(client, operation, this->data);
+        command(client, operation, this);
 }

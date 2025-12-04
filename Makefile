@@ -7,9 +7,11 @@ INCLUDES = -Isrc/class
 SRCS = \
 	src/main.cpp \
 	src/class/Server.cpp \
+	src/class/Channel.cpp \
 	src/class/Client.cpp \
 	src/class/Operation.cpp \
-	src/commad/nick.cpp
+	src/commad/nick.cpp \
+	src/utils.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
