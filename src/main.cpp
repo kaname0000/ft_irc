@@ -36,6 +36,7 @@ int main(int argc, char **argv)
         Server server(port, argv[2]);
         std::cout << "Server socket initialized on port " << port << std::endl;
         std::cout << "Listening fd: " << server.getListenFd() << std::endl;
+        server.run();
     }
     catch (const std::exception &e)
     {

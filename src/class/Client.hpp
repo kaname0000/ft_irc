@@ -31,6 +31,7 @@ public:
     void setUsername(const std::string &user);
     void setAuthenticated(bool status);
     void setRegistered(bool status);
+    void sendMessage(const std::string &msg);
 
     // Buffer Operations(カナメさん用)
     void appendReceiveBuffer(const std::string &data);

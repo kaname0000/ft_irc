@@ -24,12 +24,17 @@ private:
     int _port;
     std::string _password;
     std::vector<struct pollfd> _pfds;
+    std::map<int, Client *> _client_map;
 
     Server();
     Server(const Server &other);
     Server &operator=(const Server &other);
 
     void initSocket();
+    void addPollFd(int fd);
+    void removePollFd(size_t index);
+    void acceptNewClient();
+    void handleClientData(size_t index);
 
 public:
     Server(int port, const std::string &password);
@@ -38,6 +43,7 @@ public:
     int getListenFd() const;
     const std::vector<struct pollfd> &getPollFds() const;
 
+    void run();
     void handleClientMessage(Client *client, const std::string &msg);
 };
 
