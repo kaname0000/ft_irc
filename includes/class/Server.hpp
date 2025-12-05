@@ -5,26 +5,21 @@
 #include <map>
 #include <string>
 #include <iostream>
+#include <algorithm>
 #include <poll.h>
 
 class Client;
 class Channel;
 
-struct Data
-{
-    std::vector<Client *> _clients;
-    std::vector<Channel *> _channels;
-};
-
 class Server
 {
 private:
-    Data data;
+    std::map<int, Client *> _clients;
+    std::map<std::string, Channel *> _channels;
     int _listen_fd;
     int _port;
     std::string _password;
     std::vector<struct pollfd> _pfds;
-    std::map<int, Client *> _client_map;
 
     Server();
     Server(const Server &other);
@@ -41,9 +36,16 @@ public:
     ~Server();
 
     int getListenFd() const;
+    std::string getPassword() const;
     const std::vector<struct pollfd> &getPollFds() const;
 
     void run();
+    std::map<int, Client *> getClients() const;
+    Client *getClient(const int) const;
+    Client *getClient(const std::string &) const;
+    std::map<std::string, Channel *> getChannels() const;
+    Channel *getChannel(const std::string &) const;
+
     void handleClientMessage(Client *client, const std::string &msg);
 };
 

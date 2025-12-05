@@ -12,10 +12,9 @@
 #include <cerrno>
 #include <cstring>
 #include <stdexcept>
-#include <algorithm>
 
 Server::Server(int port, const std::string &password)
-    : data(), _listen_fd(-1), _port(port), _password(password), _pfds(), _client_map()
+    : _clients(), _channels(), _listen_fd(-1), _port(port), _password(password), _pfds()
 {
     initSocket();
 }
@@ -24,8 +23,8 @@ Server::~Server()
 {
     if (_listen_fd != -1)
         close(_listen_fd);
-    std::map<int, Client *>::iterator it = _client_map.begin();
-    for (; it != _client_map.end(); ++it)
+    std::map<int, Client *>::iterator it = _clients.begin();
+    for (; it != _clients.end(); ++it)
     {
         if (it->first != -1)
             close(it->first);
@@ -34,7 +33,49 @@ Server::~Server()
 }
 
 int Server::getListenFd() const { return _listen_fd; }
+std::string Server::getPassword() const { return _password; }
 const std::vector<struct pollfd> &Server::getPollFds() const { return _pfds; }
+
+std::map<int, Client *> Server::getClients() const { return _clients; }
+Client *Server::getClient(const int fd) const
+{
+
+    std::map<int, Client *>::const_iterator it = _clients.find(fd);
+    if (it != _clients.end())
+    {
+        return it->second;
+    }
+
+    return NULL;
+}
+
+Client *Server::getClient(const std::string &target) const
+{
+    for (std::map<int, Client *>::const_iterator it = _clients.begin(); it != _clients.end(); ++it)
+    {
+
+        Client *client_ptr = it->second;
+
+        if (client_ptr != NULL && client_ptr->getNickname() == target)
+        {
+            return client_ptr;
+        }
+    }
+
+    return NULL;
+}
+
+std::map<std::string, Channel *> Server::getChannels() const { return _channels; }
+Channel *Server::getChannel(const std::string &target) const
+{
+    std::map<std::string, Channel *>::const_iterator it = _channels.find(target);
+    if (it != _channels.end())
+    {
+        return it->second;
+    }
+
+    return NULL;
+}
 
 void Server::initSocket()
 {
@@ -120,8 +161,7 @@ void Server::acceptNewClient()
         }
 
         Client *client = new Client(client_fd);
-        _client_map[client_fd] = client;
-        data._clients.push_back(client);
+        _clients[client_fd] = client;
         addPollFd(client_fd);
         std::cout << "Accepted new client fd=" << client_fd << std::endl;
     }
@@ -133,8 +173,8 @@ void Server::handleClientData(size_t index)
         return;
 
     int fd = _pfds[index].fd;
-    std::map<int, Client *>::iterator it = _client_map.find(fd);
-    if (it == _client_map.end())
+    std::map<int, Client *>::iterator it = _clients.find(fd);
+    if (it == _clients.end())
         return;
 
     Client *client = it->second;
@@ -169,8 +209,7 @@ void Server::handleClientData(size_t index)
 
     if (close_client)
     {
-        data._clients.erase(std::remove(data._clients.begin(), data._clients.end(), client), data._clients.end());
-        _client_map.erase(fd);
+        _clients.erase(fd);
         close(fd);
         delete client;
         removePollFd(index);
@@ -207,5 +246,5 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
 
     CommandFunc command = operation.getCommandFunc();
     if (command)
-        command(client, operation, this->data);
+        command(client, operation, this);
 }
