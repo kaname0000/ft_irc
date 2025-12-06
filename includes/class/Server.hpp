@@ -26,6 +26,10 @@ private:
     Server &operator=(const Server &other);
 
     void initSocket();
+    void addPollFd(int fd);
+    void removePollFd(size_t index);
+    void acceptNewClient();
+    void handleClientData(size_t index);
 
 public:
     Server(int port, const std::string &password);
@@ -35,13 +39,14 @@ public:
     std::string getPassword() const;
     const std::vector<struct pollfd> &getPollFds() const;
 
+    void run();
     std::map<int, Client *> getClients() const;
     Client *getClient(const int) const;
     Client *getClient(const std::string &) const;
     std::map<std::string, Channel *> getChannels() const;
     Channel *getChannel(const std::string &) const;
 
-    void handleClientMessage(Client *, const std::string &);
+    void handleClientMessage(Client *client, const std::string &msg);
 };
 
 #endif
