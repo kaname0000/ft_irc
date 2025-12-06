@@ -1,4 +1,4 @@
-#include "Operation.hpp"
+#include "../../includes/class/Operation.hpp"
 
 CommandFunc COMMANDFUNC[] = {
     nick,

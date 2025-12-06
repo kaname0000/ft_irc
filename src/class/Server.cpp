@@ -1,7 +1,7 @@
-#include "Server.hpp"
-#include "Client.hpp"
-#include "Channel.hpp"
-#include "Operation.hpp"
+#include "../../includes/class/Server.hpp"
+#include "../../includes/class/Client.hpp"
+#include "../../includes/class/Channel.hpp"
+#include "../../includes/class/Operation.hpp"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -180,6 +180,37 @@ void Server::handleClientData(size_t index)
     Client *client = it->second;
     char buf[4096];
     bool close_client = false;
+
+    while (true)
+    {
+        ssize_t n = recv(client->getFd(), buf, sizeof(buf) - 1, 0);
+        if (n <= 0)
+        {
+            return;
+        }
+        buf[n] = '\0';
+        std::string line(buf);
+        if (!client->isAuthenticated())
+        {
+            if (line.substr(0, 5) == "PASS ")
+            {
+                std::string received_pass = line.substr(5);
+                received_pass.erase(received_pass.find_first_of("\r\n")); // 改行削除
+                if (received_pass == _password)
+                {
+                    client->setAuthenticated(true);
+                    std::cout << "Client authenticated fd=" << client->getFd() << std::endl;
+                }
+                else
+                {
+                    std::cout << "Client failed PASS\n";
+                }
+            }
+            else
+                continue;
+        }
+    }
+
     while (true)
     {
         ssize_t n = recv(fd, buf, sizeof(buf), 0);
@@ -244,6 +275,7 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
 {
     Operation operation(msg);
 
+    std::cout << operation.getCommand();
     CommandFunc command = operation.getCommandFunc();
     if (command)
         command(client, operation, this);

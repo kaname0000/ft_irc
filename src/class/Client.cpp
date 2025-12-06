@@ -1,4 +1,4 @@
-#include "Client.hpp"
+#include "../../includes/class/Client.hpp"
 
 #include <sys/types.h>
 #include <sys/socket.h>
