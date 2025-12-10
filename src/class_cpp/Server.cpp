@@ -280,3 +280,63 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
     if (command)
         command(client, operation, this);
 }
+
+void Server::handleJoin(Client* client, const std::vector<std::string>& params) {
+    if (!client->isRegistered()) {
+        client->sendReply("451 * :You have not registered");
+        return;
+    }
+    if (params.empty() || params[0].empty()) {
+        client->sendReply("461 JOIN :Not enough parameters");
+        return;
+    }
+
+    std::string channel_name = params[0];
+    std::string channel_key = (params.size() > 1) ? params[1] : "";
+
+    if (!isValidChannelName(channel_name)) {
+        client->sendReply("403 " + channel_name + " :No such channel");
+        return;
+    }
+
+    Channel* channel = getChannel(channel_name);
+
+    if (channel == NULL) {
+        try {
+            channel = createChannel(channel_name);
+            channel->addOperator(client);
+            channel->setMode('t', true);
+        } catch (const std::exception& e) {
+            std::cerr << "Channel creation failed: " << e.what() << std::endl;
+            return;
+        }
+    } else {
+        if (channel->isMember(client->getFd())) {
+            return;
+        }
+        if (channel->getMode('k') && channel->getKey() != channel_key) {
+            client->sendReply("475 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+k)");
+            return;
+        }
+        if (channel->getMode('l') && channel->getMemberCount() >= channel->getLimit()) {
+            client->sendReply("471 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+l)");
+            return;
+        }
+        if (channel->getMode('i') && !channel->isInvited(client->getFd())) {
+             client->sendReply("473 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+i)");
+             return;
+        }
+        if (channel->isInvited(client->getFd())) {
+             channel->removeInvite(client->getFd());
+        }
+    }
+    channel->addMember(client);
+    std::string join_msg = ":" + client->getNickname() + "!" + client->getUsername() + "@hostname JOIN :" + channel_name;
+    channel->broadcast(join_msg);
+    if (!channel->getTopic().empty()) {
+        client->sendReply("332 " + client->getNickname() + " " + channel_name + " :" + channel->getTopic());
+    } else {
+        client->sendReply("331 " + client->getNickname() + " " + channel_name + " :No topic is set");
+    }
+    channel->sendNamesReply(client);
+}

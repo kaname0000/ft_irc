@@ -30,17 +30,27 @@ public:
     Channel(const std::string &name);
     ~Channel();
 
-    // Member Management
+    const std::string& getName() const;
+    const std::string& getTopic() const;
+    const std::string& getKey() const;
+    int getLimit() const;
+    int getMemberCount() const;
+
     void addMember(Client *client);
     void removeMember(int fd);
-    // ... その他 isMember, isOperator ...
 
-    // Mode Management (MODEコマンド処理)
+    bool isMember(int fd) const;
+    bool isOperator(int fd) const;
+    void addOperator(Client *client);
+
+    bool isInvited(int fd) const;
+    void removeInvite(int fd);
+
     bool setMode(char mode, bool enable);
     bool getMode(char mode) const;
 
-    // Broadcasting (メッセージ転送)
     void broadcast(const std::string &msg, int exclude_fd = -1);
+    void sendNamesReply(Client* client) const; // RPL_NAMEREPLY (353) を送信
 };
 
 #endif
