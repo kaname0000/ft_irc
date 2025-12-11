@@ -29,7 +29,9 @@ private:
     void addPollFd(int fd);
     void removePollFd(size_t index);
     void acceptNewClient();
-    void handleClientData(size_t index);
+    bool handleClientData(size_t index);
+    void updatePollEvents(size_t index, short events);
+    void refreshPollEvents();
 
 public:
     Server(int port, const std::string &password);
