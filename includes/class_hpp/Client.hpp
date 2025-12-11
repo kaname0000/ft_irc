@@ -11,6 +11,9 @@ private:
     int _fd;
     std::string _nickname;
     std::string _username;
+    std::string _hostname;
+    std::string _servername;
+    std::string _realname;
     bool _auth_status;
     bool _is_registered;
     std::string _receive_buffer;
@@ -30,6 +33,9 @@ public:
 
     void setNickname(const std::string &nick);
     void setUsername(const std::string &user);
+    void setHostname(const std::string &host);
+    void setServername(const std::string &server);
+    void setRealname(const std::string &real);
     void setAuthenticated(bool status);
     void setRegistered(bool status);
     void sendMessage(const std::string &msg);

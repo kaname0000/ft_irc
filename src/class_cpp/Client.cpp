@@ -1,4 +1,4 @@
-#include "../../includes/class/Client.hpp"
+#include "../../includes/class_hpp/Client.hpp"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -8,7 +8,8 @@
 #include <iostream>
 
 Client::Client(int fd)
-    : _fd(fd), _nickname(""), _username(""), _auth_status(false), _is_registered(false), _receive_buffer(""), _send_buffer("")
+    : _fd(fd),
+      _nickname(""), _username(""), _auth_status(false), _is_registered(false), _receive_buffer(""), _send_buffer("")
 {
 }
 
@@ -22,6 +23,9 @@ bool Client::isAuthenticated() const { return _auth_status; }
 
 void Client::setNickname(const std::string &nick) { _nickname = nick; }
 void Client::setUsername(const std::string &user) { _username = user; }
+void Client::setHostname(const std::string &host) { _hostname = host; }
+void Client::setServername(const std::string &server) { _servername = server; }
+void Client::setRealname(const std::string &real) { _realname = real; }
 void Client::setAuthenticated(bool status) { _auth_status = status; }
 void Client::setRegistered(bool status) { _is_registered = status; }
 
@@ -34,7 +38,10 @@ std::string Client::extractCommand()
 {
     std::string::size_type pos = _receive_buffer.find("\r\n");
     if (pos == std::string::npos)
+    {
+        // std::cout << "npos\n";
         return "";
+    }
     std::string cmd = _receive_buffer.substr(0, pos);
     _receive_buffer.erase(0, pos + 2);
     return cmd;

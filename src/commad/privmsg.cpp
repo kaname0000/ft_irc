@@ -1,11 +1,12 @@
-#include "Operation.hpp"
-#include "Client.hpp"
-#include "Channel.hpp"
-#include "Server.hpp"
-#include "../utils.hpp"
+#include "../../includes/class_hpp/Server.hpp"
+#include "../../includes/class_hpp/Client.hpp"
+#include "../../includes/class_hpp/Channel.hpp"
+#include "../../includes/class_hpp/Operation.hpp"
+#include "../../includes/utils.hpp"
 
 void privmsg(Client *client, Operation &op, Server *server)
 {
+
     const std::vector<std::string> &params = op.getParameter();
     const std::string &message = op.getTrailing();
 

@@ -6,11 +6,13 @@ INCLUDES = -Iincludes/class -Iincludes
 
 SRCS = \
 	src/main.cpp \
-	src/class/Server.cpp \
-	src/class/Channel.cpp \
-	src/class/Client.cpp \
-	src/class/Operation.cpp \
+	src/class_cpp/Server.cpp \
+	src/class_cpp/Channel.cpp \
+	src/class_cpp/Client.cpp \
+	src/class_cpp/Operation.cpp \
 	src/commad/nick.cpp \
+	src/commad/pass.cpp \
+	src/commad/privmsg.cpp \
 	src/utils.cpp
 
 OBJS = $(SRCS:.cpp=.o)

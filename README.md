@@ -1,15 +1,6 @@
-みなさんへ
-ヘッダーファイルとソースファイルのディレクトリは分けますか
+./ft_irc <port> <password>
 
-カワイさんへ
-
-void Server::handleClientMessage(Client *client, const std::string &msg);
-この関数の戻り値をどうするか
-
-カナメさんへ
-
-
-タケルさんへ
+/connect 127.0.0.1 6667 
 
 
 

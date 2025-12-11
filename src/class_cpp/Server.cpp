@@ -1,7 +1,7 @@
-#include "../../includes/class/Server.hpp"
-#include "../../includes/class/Client.hpp"
-#include "../../includes/class/Channel.hpp"
-#include "../../includes/class/Operation.hpp"
+#include "../../includes/class_hpp/Server.hpp"
+#include "../../includes/class_hpp/Client.hpp"
+#include "../../includes/class_hpp/Channel.hpp"
+#include "../../includes/class_hpp/Operation.hpp"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -206,39 +206,10 @@ bool Server::handleClientData(size_t index)
 
     while (true)
     {
-        ssize_t n = recv(client->getFd(), buf, sizeof(buf) - 1, 0);
-        if (n <= 0)
-        {
-            return;
-        }
-        buf[n] = '\0';
-        std::string line(buf);
-        if (!client->isAuthenticated())
-        {
-            if (line.substr(0, 5) == "PASS ")
-            {
-                std::string received_pass = line.substr(5);
-                received_pass.erase(received_pass.find_first_of("\r\n")); // 改行削除
-                if (received_pass == _password)
-                {
-                    client->setAuthenticated(true);
-                    std::cout << "Client authenticated fd=" << client->getFd() << std::endl;
-                }
-                else
-                {
-                    std::cout << "Client failed PASS\n";
-                }
-            }
-            else
-                continue;
-        }
-    }
-
-    while (true)
-    {
         ssize_t n = recv(fd, buf, sizeof(buf), 0);
         if (n > 0)
         {
+            // std::cout << buf;
             client->appendReceiveBuffer(std::string(buf, n));
             std::string cmd;
             while (!(cmd = client->extractCommand()).empty())
@@ -319,68 +290,85 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
 {
     Operation operation(msg);
 
-    std::cout << operation.getCommand();
     CommandFunc command = operation.getCommandFunc();
     if (command)
         command(client, operation, this);
 }
 
-void Server::handleJoin(Client* client, const std::vector<std::string>& params) {
-    if (!client->isRegistered()) {
-        client->sendReply("451 * :You have not registered");
-        return;
-    }
-    if (params.empty() || params[0].empty()) {
-        client->sendReply("461 JOIN :Not enough parameters");
-        return;
-    }
+// void Server::handleJoin(Client *client, const std::vector<std::string> &params)
+// {
+//     if (!client->isRegistered())
+//     {
+//         client->sendReply("451 * :You have not registered");
+//         return;
+//     }
+//     if (params.empty() || params[0].empty())
+//     {
+//         client->sendReply("461 JOIN :Not enough parameters");
+//         return;
+//     }
 
-    std::string channel_name = params[0];
-    std::string channel_key = (params.size() > 1) ? params[1] : "";
+//     std::string channel_name = params[0];
+//     std::string channel_key = (params.size() > 1) ? params[1] : "";
 
-    if (!isValidChannelName(channel_name)) {
-        client->sendReply("403 " + channel_name + " :No such channel");
-        return;
-    }
+//     if (!isValidChannelName(channel_name))
+//     {
+//         client->sendReply("403 " + channel_name + " :No such channel");
+//         return;
+//     }
 
-    Channel* channel = getChannel(channel_name);
+//     Channel *channel = getChannel(channel_name);
 
-    if (channel == NULL) {
-        try {
-            channel = createChannel(channel_name);
-            channel->addOperator(client);
-            channel->setMode('t', true);
-        } catch (const std::exception& e) {
-            std::cerr << "Channel creation failed: " << e.what() << std::endl;
-            return;
-        }
-    } else {
-        if (channel->isMember(client->getFd())) {
-            return;
-        }
-        if (channel->getMode('k') && channel->getKey() != channel_key) {
-            client->sendReply("475 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+k)");
-            return;
-        }
-        if (channel->getMode('l') && channel->getMemberCount() >= channel->getLimit()) {
-            client->sendReply("471 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+l)");
-            return;
-        }
-        if (channel->getMode('i') && !channel->isInvited(client->getFd())) {
-             client->sendReply("473 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+i)");
-             return;
-        }
-        if (channel->isInvited(client->getFd())) {
-             channel->removeInvite(client->getFd());
-        }
-    }
-    channel->addMember(client);
-    std::string join_msg = ":" + client->getNickname() + "!" + client->getUsername() + "@hostname JOIN :" + channel_name;
-    channel->broadcast(join_msg);
-    if (!channel->getTopic().empty()) {
-        client->sendReply("332 " + client->getNickname() + " " + channel_name + " :" + channel->getTopic());
-    } else {
-        client->sendReply("331 " + client->getNickname() + " " + channel_name + " :No topic is set");
-    }
-    channel->sendNamesReply(client);
-}
+//     if (channel == NULL)
+//     {
+//         try
+//         {
+//             channel = createChannel(channel_name);
+//             channel->addOperator(client);
+//             channel->setMode('t', true);
+//         }
+//         catch (const std::exception &e)
+//         {
+//             std::cerr << "Channel creation failed: " << e.what() << std::endl;
+//             return;
+//         }
+//     }
+//     else
+//     {
+//         if (channel->isMember(client->getFd()))
+//         {
+//             return;
+//         }
+//         if (channel->getMode('k') && channel->getKey() != channel_key)
+//         {
+//             client->sendReply("475 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+k)");
+//             return;
+//         }
+//         if (channel->getMode('l') && channel->getMemberCount() >= channel->getLimit())
+//         {
+//             client->sendReply("471 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+l)");
+//             return;
+//         }
+//         if (channel->getMode('i') && !channel->isInvited(client->getFd()))
+//         {
+//             client->sendReply("473 " + client->getNickname() + " " + channel_name + " :Cannot join channel (+i)");
+//             return;
+//         }
+//         if (channel->isInvited(client->getFd()))
+//         {
+//             channel->removeInvite(client->getFd());
+//         }
+//     }
+//     channel->addMember(client);
+//     std::string join_msg = ":" + client->getNickname() + "!" + client->getUsername() + "@hostname JOIN :" + channel_name;
+//     channel->broadcast(join_msg);
+//     if (!channel->getTopic().empty())
+//     {
+//         client->sendReply("332 " + client->getNickname() + " " + channel_name + " :" + channel->getTopic());
+//     }
+//     else
+//     {
+//         client->sendReply("331 " + client->getNickname() + " " + channel_name + " :No topic is set");
+//     }
+//     channel->sendNamesReply(client);
+// }

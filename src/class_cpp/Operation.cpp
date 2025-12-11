@@ -1,4 +1,4 @@
-#include "../../includes/class/Operation.hpp"
+#include "../../includes/class_hpp/Operation.hpp"
 
 CommandFunc COMMANDFUNC[] = {
     nick,
@@ -11,6 +11,7 @@ CommandFunc COMMANDFUNC[] = {
     invite,
     topic,
     mode,
+    pass,
 };
 
 static COMMAND stringToCommand(const std::string &token)
@@ -35,6 +36,8 @@ static COMMAND stringToCommand(const std::string &token)
         return TOPIC;
     if (token == "MODE")
         return MODE;
+    if (token == "PASS")
+        return PASS;
     return UNKNOWN;
 }
 
@@ -73,7 +76,7 @@ const std::string &Operation::getTrailing() const { return _trailing_parameter; 
 
 CommandFunc Operation::getCommandFunc() const
 {
-    if (_command >= NICK && _command <= MODE)
+    if (_command >= NICK && _command <= PASS)
         return COMMANDFUNC[_command];
     return NULL;
 }
