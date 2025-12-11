@@ -49,6 +49,20 @@ public:
     Channel *getChannel(const std::string &) const;
 
     void handleClientMessage(Client *client, const std::string &msg);
+
+    void handleJoin(Client* client, const std::vector<std::string>& params);
+    void handlePart(Client* client, const std::vector<std::string>& params);
+
+    void handleKick(Client* client, const std::vector<std::string>& params);
+    void handleInvite(Client* client, const std::vector<std::string>& params);
+
+    void handleTopic(Client* client, const std::vector<std::string>& params);
+
+    void handleMode(Client* client, const std::vector<std::string>& params);
+
+    Channel* createChannel(const std::string& name);
+    void     removeChannel(const std::string& name);
+
 };
 
 #endif

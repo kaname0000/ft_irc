@@ -1,8 +1,8 @@
-#include "Operation.hpp"
-#include "Client.hpp"
-#include "Channel.hpp"
-#include "Server.hpp"
-#include "../utils.hpp"
+#include "../../includes/class/Server.hpp"
+#include "../../includes/class/Client.hpp"
+#include "../../includes/class/Channel.hpp"
+#include "../../includes/class/Operation.hpp"
+#include "../../includes/utils.hpp"
 
 // TODO: 各コマンドの実装は後で埋める。現在はサーバー起動確認用のスタブ。
 void nick(Client *, Operation &, Server *);
