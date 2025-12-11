@@ -14,6 +14,7 @@ private:
     bool _auth_status;
     bool _is_registered;
     std::string _receive_buffer;
+    std::string _send_buffer;
 
     Client();
     Client(const Client &other);
@@ -32,6 +33,9 @@ public:
     void setAuthenticated(bool status);
     void setRegistered(bool status);
     void sendMessage(const std::string &msg);
+    bool hasPendingSend() const;
+    void queueMessage(const std::string &msg);
+    bool flushSend();
 
     // Buffer Operations(カナメさん用)
     void appendReceiveBuffer(const std::string &data);

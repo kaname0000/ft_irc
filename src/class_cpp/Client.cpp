@@ -8,7 +8,7 @@
 #include <iostream>
 
 Client::Client(int fd)
-    : _fd(fd), _nickname(""), _username(""), _auth_status(false), _is_registered(false), _receive_buffer("")
+    : _fd(fd), _nickname(""), _username(""), _auth_status(false), _is_registered(false), _receive_buffer(""), _send_buffer("")
 {
 }
 
@@ -40,27 +40,41 @@ std::string Client::extractCommand()
     return cmd;
 }
 
-void Client::sendMessage(const std::string &msg)
+bool Client::hasPendingSend() const
+{
+    return !_send_buffer.empty();
+}
+
+void Client::queueMessage(const std::string &msg)
 {
     std::string out = msg;
     if (out.size() < 2 || out.substr(out.size() - 2) != "\r\n")
         out += "\r\n";
 
-    size_t sent = 0;
-    while (sent < out.size())
+    _send_buffer += out;
+}
+
+bool Client::flushSend()
+{
+    while (!_send_buffer.empty())
     {
-        ssize_t n = ::send(_fd, out.c_str() + sent, out.size() - sent, 0);
+        ssize_t n = ::send(_fd, _send_buffer.c_str(), _send_buffer.size(), 0);
         if (n > 0)
         {
-            sent += static_cast<size_t>(n);
+            _send_buffer.erase(0, static_cast<size_t>(n));
             continue;
         }
         if (errno == EAGAIN || errno == EWOULDBLOCK)
-        {
-            // ノンブロッキングで送れなかった分は現状破棄。送信キューを実装する場合はここで蓄積する。
-            break;
-        }
+            return false;
         std::cerr << "send() failed on fd=" << _fd << " : " << std::strerror(errno) << std::endl;
-        break;
+        _send_buffer.clear();
+        return false;
     }
+    return true;
+}
+
+void Client::sendMessage(const std::string &msg)
+{
+    queueMessage(msg);
+    flushSend();
 }

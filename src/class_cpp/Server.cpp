@@ -139,6 +139,29 @@ void Server::removePollFd(size_t index)
     _pfds.erase(it);
 }
 
+void Server::updatePollEvents(size_t index, short events)
+{
+    if (index < _pfds.size())
+        _pfds[index].events = events;
+}
+
+void Server::refreshPollEvents()
+{
+    for (size_t i = 0; i < _pfds.size(); ++i)
+    {
+        if (_pfds[i].fd == _listen_fd)
+        {
+            _pfds[i].events = POLLIN;
+            continue;
+        }
+        std::map<int, Client *>::iterator it = _clients.find(_pfds[i].fd);
+        short events = POLLIN;
+        if (it != _clients.end() && it->second->hasPendingSend())
+            events |= POLLOUT;
+        _pfds[i].events = events;
+    }
+}
+
 void Server::acceptNewClient()
 {
     while (true)
@@ -167,15 +190,15 @@ void Server::acceptNewClient()
     }
 }
 
-void Server::handleClientData(size_t index)
+bool Server::handleClientData(size_t index)
 {
     if (index >= _pfds.size())
-        return;
+        return false;
 
     int fd = _pfds[index].fd;
     std::map<int, Client *>::iterator it = _clients.find(fd);
     if (it == _clients.end())
-        return;
+        return false;
 
     Client *client = it->second;
     char buf[4096];
@@ -244,13 +267,16 @@ void Server::handleClientData(size_t index)
         close(fd);
         delete client;
         removePollFd(index);
+        return true;
     }
+    return false;
 }
 
 void Server::run()
 {
     while (true)
     {
+        refreshPollEvents();
         int ret = poll(&_pfds[0], _pfds.size(), -1);
         if (ret < 0)
         {
@@ -261,12 +287,30 @@ void Server::run()
 
         for (size_t i = 0; i < _pfds.size(); ++i)
         {
-            if (!(_pfds[i].revents & POLLIN))
-                continue;
             if (_pfds[i].fd == _listen_fd)
-                acceptNewClient();
-            else
-                handleClientData(i);
+            {
+                if (_pfds[i].revents & POLLIN)
+                    acceptNewClient();
+                continue;
+            }
+            if (!_pfds[i].revents)
+                continue;
+
+            bool removed = false;
+            if (_pfds[i].revents & (POLLIN | POLLERR | POLLHUP))
+            {
+                if (handleClientData(i))
+                {
+                    removed = true;
+                    --i;
+                }
+            }
+            if (!removed && (_pfds[i].revents & POLLOUT))
+            {
+                std::map<int, Client *>::iterator it = _clients.find(_pfds[i].fd);
+                if (it != _clients.end() && it->second->flushSend())
+                    updatePollEvents(i, POLLIN);
+            }
         }
     }
 }
