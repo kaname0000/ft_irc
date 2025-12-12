@@ -209,7 +209,6 @@ bool Server::handleClientData(size_t index)
         ssize_t n = recv(fd, buf, sizeof(buf), 0);
         if (n > 0)
         {
-            // std::cout << buf;
             client->appendReceiveBuffer(std::string(buf, n));
             std::string cmd;
             while (!(cmd = client->extractCommand()).empty())
@@ -290,6 +289,7 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
 {
     Operation operation(msg);
 
+    // std::cout << "From " << client->getFd() << " " << msg << std::endl;
     CommandFunc command = operation.getCommandFunc();
     if (command)
         command(client, operation, this);
