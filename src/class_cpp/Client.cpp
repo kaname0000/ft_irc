@@ -36,14 +36,16 @@ void Client::appendReceiveBuffer(const std::string &data)
 
 std::string Client::extractCommand()
 {
-    std::string::size_type pos = _receive_buffer.find("\r\n");
+    // Accept both IRC-standard CRLF and a lone LF (e.g., from nc) as terminators
+    std::string::size_type pos = _receive_buffer.find("\n");
     if (pos == std::string::npos)
-    {
-        // std::cout << "npos\n";
         return "";
-    }
+
     std::string cmd = _receive_buffer.substr(0, pos);
-    _receive_buffer.erase(0, pos + 2);
+    if (!cmd.empty() && cmd[cmd.size() - 1] == '\r')
+        cmd.erase(cmd.size() - 1); // drop trailing CR if present
+
+    _receive_buffer.erase(0, pos + 1);
     return cmd;
 }
 
