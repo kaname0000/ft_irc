@@ -13,6 +13,7 @@ SRCS = \
 	src/commad/nick.cpp \
 	src/commad/pass.cpp \
 	src/commad/privmsg.cpp \
+	src/commad/user.cpp \
 	src/utils.cpp
 
 OBJS = $(SRCS:.cpp=.o)

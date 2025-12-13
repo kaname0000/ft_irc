@@ -5,8 +5,6 @@
 #include "../../includes/utils.hpp"
 
 // TODO: 各コマンドの実装は後で埋める。現在はサーバー起動確認用のスタブ。
-void nick(Client *, Operation &, Server *);
-void user(Client *, Operation &, Server *) {}
 void join(Client *, Operation &, Server *) {}
 void part(Client *, Operation &, Server *) {}
 void quit(Client *, Operation &, Server *) {}
@@ -26,7 +24,7 @@ void nick(Client *client, Operation &operation, Server *server)
     // disallow mult parameter or no parameters
     if (param.size() != 1)
     {
-        client->sendMessage(":server.example.com 432 * :Erroneous nickname");
+        client->sendMessage(":server 432 * :Erroneous nickname");
         std::cout << "nickname too params\n";
         return;
     }
@@ -36,11 +34,13 @@ void nick(Client *client, Operation &operation, Server *server)
     // check Nickname
     if (!isValidName(newNickname, "-_[]\\`^{}", 9))
     {
-        client->sendMessage(":server.example.com 432 * :Erroneous nickname");
+        client->sendMessage(":server 432 * :Erroneous nickname");
         std::cout << "nickname invlaid char\n";
         return;
     }
 
-    client->setNickname(operation.getParameter()[0]);
-    std::cout << "set new nickname\n";
+    client->sendMessage(":" + client->getNickname() + " NICK :" + param[0]);
+    client->setNickname(param[0]);
+    // std::cout << "set new nickname\n";
+    client->setRegisteredNickname(true);
 }

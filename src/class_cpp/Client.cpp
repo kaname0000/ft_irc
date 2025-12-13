@@ -9,7 +9,7 @@
 
 Client::Client(int fd)
     : _fd(fd),
-      _nickname(""), _username(""), _auth_status(false), _is_registered(false), _receive_buffer(""), _send_buffer("")
+      _nickname(""), _username(""), _auth_status(false), _is_registered_nickname(false), _is_registered_username(false), _is_registered(false), _receive_buffer(""), _send_buffer("")
 {
 }
 
@@ -19,7 +19,14 @@ Client::~Client()
 
 int Client::getFd() const { return _fd; }
 const std::string &Client::getNickname() const { return _nickname; }
+const std::string &Client::getUsername() const { return _username; }
+const std::string &Client::getHostname() const { return _hostname; }
+std::string Client::getClientdata() const { return (":" + _nickname + "!" + _username + "@" + _hostname); }
+
 bool Client::isAuthenticated() const { return _auth_status; }
+bool Client::isRegisteredNickname() const { return _is_registered_nickname; }
+bool Client::isRegisteredUsername() const { return _is_registered_username; }
+bool Client::isRegistered() const { return _is_registered; }
 
 void Client::setNickname(const std::string &nick) { _nickname = nick; }
 void Client::setUsername(const std::string &user) { _username = user; }
@@ -27,6 +34,8 @@ void Client::setHostname(const std::string &host) { _hostname = host; }
 void Client::setServername(const std::string &server) { _servername = server; }
 void Client::setRealname(const std::string &real) { _realname = real; }
 void Client::setAuthenticated(bool status) { _auth_status = status; }
+void Client::setRegisteredNickname(bool status) { _is_registered_nickname = status; }
+void Client::setRegisteredUsername(bool status) { _is_registered_username = status; }
 void Client::setRegistered(bool status) { _is_registered = status; }
 
 void Client::appendReceiveBuffer(const std::string &data)
@@ -67,9 +76,11 @@ bool Client::flushSend()
 {
     while (!_send_buffer.empty())
     {
+        std::cout << _send_buffer << std::endl;
         ssize_t n = ::send(_fd, _send_buffer.c_str(), _send_buffer.size(), 0);
         if (n > 0)
         {
+            // std::cout << "send msg\n";
             _send_buffer.erase(0, static_cast<size_t>(n));
             continue;
         }

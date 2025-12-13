@@ -38,6 +38,8 @@ void privmsg(Client *client, Operation &op, Server *server)
             client->sendMessage("401 " + target + " :No such nick"); // ERR_NOSUCHNICK
             return;
         }
+        // std::cout << client->getNickname() << "->" << dest->getNickname() << std::endl;
+        // dest->sendMessage(client->getClientdata() + " PRIVMSG " + target + " :" + message);
         dest->sendMessage(":" + client->getNickname() + " PRIVMSG " + target + " :" + message);
     }
 }
