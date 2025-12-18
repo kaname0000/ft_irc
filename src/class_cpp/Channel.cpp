@@ -23,45 +23,41 @@ const std::string &Channel::getName() const { return _name; }
 const std::string &Channel::getTopic() const { return _topic; }
 const std::string &Channel::getKey() const { return _key; }
 int Channel::getLimit() const { return _limit; }
+int Channel::getMemberCount() const { return _members.size(); }
 
-int Channel::getMemberCount() const
-{
-    return _members.size();
-}
+void Channel::setTopic(const std::string& topic) { _topic = topic; }
+void Channel::setKey(const std::string& key) { _key = key; }
+void Channel::setLimit(int limit) { _limit = limit; }
 
 void Channel::addMember(Client *client)
 {
     if (client && _members.find(client->getFd()) == _members.end())
-    {
         _members[client->getFd()] = client;
-    }
 }
-
 void Channel::removeMember(int fd)
 {
     _members.erase(fd);
     _operators.erase(fd);
+    _invited_fds.erase(fd);
 }
 bool Channel::isMember(int fd) const { return _members.count(fd) > 0; }
-bool Channel::isOperator(int fd) const { return _operators.count(fd) > 0; }
+
 void Channel::addOperator(Client *client)
 {
     if (client && _operators.find(client->getFd()) == _operators.end())
-    {
         _operators[client->getFd()] = client;
-    }
 }
+void Channel::removeOperator(int fd) { _operators.erase(fd); }
+bool Channel::isOperator(int fd) const { return _operators.count(fd) > 0; }
+
+void Channel::addInvite(int fd) { _invited_fds.insert(fd); }
 bool Channel::isInvited(int fd) const { return _invited_fds.count(fd) > 0; }
 void Channel::removeInvite(int fd) { _invited_fds.erase(fd); }
 
 bool Channel::getMode(char mode) const
 {
     std::map<char, bool>::const_iterator it = _mode_flags.find(mode);
-    if (it != _mode_flags.end())
-    {
-        return it->second;
-    }
-    return false;
+    return (it != _mode_flags.end()) ? it->second : false;
 }
 
 bool Channel::setMode(char mode, bool enable)
@@ -148,3 +144,31 @@ void Channel::sendNamesReply(Client *client) const
     std::string reply_366 = "366 " + client->getNickname() + " " + _name + " :End of /NAMES list";
     client->sendMessage(reply_366);
 }
+
+// // --- 通信 ---
+// void Channel::broadcast(const std::string &msg, int exclude_fd)
+// {
+//     // IRCプロトコルに合わせ、メッセージ末尾に \r\n がない場合は付与する処理を
+//     // Client::sendMessage 側で行っていることを前提としています
+//     for (std::map<int, Client *>::iterator it = _members.begin(); it != _members.end(); ++it)
+//     {
+//         if (it->first != exclude_fd)
+//             it->second->sendMessage(msg);
+//     }
+// }
+
+// void Channel::sendNamesReply(Client *client) const
+// {
+//     std::string names_list;
+//     for (std::map<int, Client *>::const_iterator it = _members.begin(); it != _members.end(); ++it)
+//     {
+//         if (isOperator(it->first)) names_list += "@";
+//         names_list += it->second->getNickname() + " ";
+//     }
+//     if (!names_list.empty()) names_list.erase(names_list.size() - 1);
+
+//     // 数値リプライ 353 (RPL_NAMEREPLY)
+//     client->sendMessage("353 " + client->getNickname() + " = " + _name + " :" + names_list);
+//     // 数値リプライ 366 (RPL_ENDOFNAMES)
+//     client->sendMessage("366 " + client->getNickname() + " " + _name + " :End of /NAMES list");
+// }

@@ -10,6 +10,7 @@ SRCS = \
 	src/class_cpp/Channel.cpp \
 	src/class_cpp/Client.cpp \
 	src/class_cpp/Operation.cpp \
+	src/class_cpp/ServerCommands.cpp \
 	src/commad/nick.cpp \
 	src/commad/pass.cpp \
 	src/commad/privmsg.cpp \
