@@ -36,13 +36,19 @@ public:
     int getLimit() const;
     int getMemberCount() const;
 
+    void setTopic(const std::string& topic);
+    void setKey(const std::string& key);
+    void setLimit(int limit);
+
     void addMember(Client *client);
     void removeMember(int fd);
-
     bool isMember(int fd) const;
-    bool isOperator(int fd) const;
-    void addOperator(Client *client);
 
+    void addOperator(Client *client);
+    void removeOperator(int fd);
+    bool isOperator(int fd) const;
+
+    void addInvite(int fd);
     bool isInvited(int fd) const;
     void removeInvite(int fd);
 
@@ -50,7 +56,7 @@ public:
     bool getMode(char mode) const;
 
     void broadcast(const std::string &msg, int exclude_fd = -1);
-    void sendNamesReply(Client* client) const; // RPL_NAMEREPLY (353) を送信
+    void sendNamesReply(Client* client) const;
 };
 
 #endif
