@@ -18,29 +18,25 @@ void mode(Client *, Operation &, Server *) {}
 void nick(Client *client, Operation &operation, Server *server)
 {
     (void)server;
-
     std::vector<std::string> param = operation.getParameter();
 
-    // disallow mult parameter or no parameters
-    if (param.size() != 1)
-    {
-        client->sendMessage(":server 432 * :Erroneous nickname");
-        std::cout << "nickname too params\n";
+    if (param.size() != 1) {
+        client->sendMessage(":server 431 " + client->getNickname() + " :No nickname given");
         return;
     }
 
     std::string newNickname = param[0];
+    std::string oldNickname = client->getNickname();
 
-    // check Nickname
-    if (!isValidName(newNickname, "-_[]\\`^{}", 9))
-    {
-        client->sendMessage(":server 432 * :Erroneous nickname");
-        std::cout << "nickname invlaid char\n";
+    if (!isValidName(newNickname, "-_[]\\`^{}", 9)) {
+        client->sendMessage(":server 432 " + oldNickname + " " + newNickname + " :Erroneous nickname");
         return;
     }
 
-    client->sendMessage(":" + client->getNickname() + " NICK :" + param[0]);
-    client->setNickname(param[0]);
-    // std::cout << "set new nickname\n";
+    std::string msg = ":" + client->getNickname() + " NICK :" + newNickname;
+    client->sendMessage(msg);
+
+    client->setNickname(newNickname);
     client->setRegisteredNickname(true);
+
 }

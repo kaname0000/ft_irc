@@ -4,7 +4,7 @@
 #include "../../includes/class_hpp/Operation.hpp"
 #include "../../includes/utils.hpp"
 
-void privmsg(Client *client, Operation &op, Server *server)
+void notice(Client *client, Operation &op, Server *server)
 {
 
     const std::vector<std::string> &params = op.getParameter();
@@ -20,24 +20,23 @@ void privmsg(Client *client, Operation &op, Server *server)
 
     if (target[0] == '#')
     {
-        // to channel
         Channel *channel = server->getChannel(target);
         if (!channel)
         {
-            client->sendMessage("403 " + target + " :No such channel"); // ERR_NOSUCHCHANNEL
+            client->sendMessage("403 " + target + " :No such channel");
             return;
         }
         channel->broadcast(message);
     }
     else
     {
-        // to client
         Client *dest = server->getClient(target);
         if (!dest)
         {
-            client->sendMessage("401 " + target + " :No such nick"); // ERR_NOSUCHNICK
+            client->sendMessage("401 " + target + " :No such nick");
             return;
         }
-        dest->sendMessage(client->getClientdata() + " PRIVMSG " + target + " :" + message);
+        dest->sendMessage(client->getClientdata() + " NOTICE " + target + " :" + message);
+        
     }
 }
