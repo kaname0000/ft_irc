@@ -295,6 +295,22 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
         command(client, operation, this);
 }
 
+Channel* Server::createChannel(const std::string& name) {
+    Channel* new_chan = new Channel(name);
+    _channels[name] = new_chan;
+    std::cout << "Channel created: " << name << std::endl;
+    return new_chan;
+}
+
+void Server::removeChannel(const std::string& name) {
+    std::map<std::string, Channel*>::iterator it = _channels.find(name);
+    if (it != _channels.end()) {
+        std::cout << "Channel deleted: " << name << std::endl;
+        delete it->second;
+        _channels.erase(it);
+    }
+}
+
 // void Server::handleJoin(Client *client, const std::vector<std::string> &params)
 // {
 //     if (!client->isRegistered())
