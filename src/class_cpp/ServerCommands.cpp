@@ -212,3 +212,31 @@ void Server::handleTopic(Client *client, const std::vector<std::string> &params)
     channel->setTopic(params[1]);
     channel->broadcast(":" + client->getNickname() + " TOPIC " + channel->getName() + " :" + params[1]);
 }
+
+void Server::handleQuit(Client *client, const std::vector<std::string> &params) {
+    std::string reason = (params.empty()) ? "Client Quit" : params[0];
+    std::string quit_notification = ":" + client->getNickname() + "!" + client->getUsername() 
+                                    + "@localhost QUIT :Quit: " + reason;
+
+    std::map<std::string, Channel *>::iterator it = _channels.begin();
+    while (it != _channels.end()) {
+        Channel *channel = it->second;
+        
+        if (channel->isMember(client->getFd())) {
+            channel->broadcast(quit_notification, client->getFd());
+            channel->removeMember(client->getFd());        
+            if (channel->getMemberCount() == 0) {
+                std::string chan_name = it->first;
+                std::map<std::string, Channel *>::iterator next_it = it;
+                ++next_it;
+                removeChannel(chan_name);
+                it = next_it;
+                continue;
+            }
+        }
+        ++it;
+    }
+
+    client->sendMessage("ERROR :Closing link: (Quit: " + reason + ")");
+    std::cout << "QUIT: User " << client->getNickname() << " has left the server." << std::endl;
+}

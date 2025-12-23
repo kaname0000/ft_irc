@@ -60,6 +60,8 @@ public:
 
     void handleMode(Client* client, const std::vector<std::string>& params);
 
+    void handleQuit(Client *client, const std::vector<std::string> &params);
+
     Channel* createChannel(const std::string& name);
     void     removeChannel(const std::string& name);
 
