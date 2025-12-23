@@ -12,6 +12,7 @@ CommandFunc COMMANDFUNC[] = {
     topic,
     mode,
     pass,
+    notice,
 };
 
 static COMMAND stringToCommand(const std::string &token)
@@ -38,6 +39,8 @@ static COMMAND stringToCommand(const std::string &token)
         return MODE;
     if (token == "PASS")
         return PASS;
+    if(token == "NOTICE")
+        return NOTICE;
     return UNKNOWN;
 }
 
@@ -76,7 +79,7 @@ const std::string &Operation::getTrailing() const { return _trailing_parameter; 
 
 CommandFunc Operation::getCommandFunc() const
 {
-    if (_command >= NICK && _command <= PASS)
+    if (_command >= NICK && _command <= NOTICE)
         return COMMANDFUNC[_command];
     return NULL;
 }

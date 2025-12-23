@@ -4,40 +4,28 @@
 #include "../../includes/class_hpp/Operation.hpp"
 #include "../../includes/utils.hpp"
 
-// PASS password
 
 void pass(Client *client, Operation &operation, Server *server)
 {
-
-    if (client->isAuthenticated())
-    {
-        client->sendMessage("* You are already registered");
+    if (client->isAuthenticated()) {
+        client->sendMessage(":server 462 " + (client->getNickname().empty() ? "*" : client->getNickname()) + " :Unauthorized command (already registered)");
         return;
     }
+
     std::vector<std::string> param = operation.getParameter();
 
-    // disallow mult parameter or no parameters
-
-    // std::cout << "pass func\n";
-    if (param.size() != 1)
-    {
-        client->sendMessage(":server 461 PASS :Not enough parameters");
-        std::cout << "error\n";
+    if (param.size() < 1) { 
+        client->sendMessage(":server 461 * PASS :Not enough parameters");
         return;
     }
 
-    if (param[0] != server->getPassword())
-    {
+    if (param[0] != server->getPassword()) {
         client->sendMessage(":server 464 * :Password incorrect");
-        std::cout << "error\n";
         return;
     }
-    else
-    {
-        if (client->isAuthenticated() && client->isRegisteredUsername())
+
+    client->setAuthenticated(true);
+
+    if (client->isAuthenticated() && client->isRegisteredUsername())
             client->sendMessage(":server 001 " + client->getNickname() + " :Welcome to the Internet Relay Network " + client->getNickname() + "!" + client->getUsername() + "@" + client->getHostname());
-        client->setAuthenticated(true);
-        // std::cout << "pass ok!\n";
-        return;
-    }
 }
