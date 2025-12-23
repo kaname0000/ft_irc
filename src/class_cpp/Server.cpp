@@ -23,11 +23,12 @@ Server::~Server()
 {
     if (_listen_fd != -1)
         close(_listen_fd);
-    std::map<int, Client *>::iterator it = _clients.begin();
-    for (; it != _clients.end(); ++it)
-    {
-        if (it->first != -1)
-            close(it->first);
+
+    for (std::map<int, Client *>::iterator it = _clients.begin(); it != _clients.end(); ++it) {
+        delete it->second;
+    }
+
+    for (std::map<std::string, Channel *>::iterator it = _channels.begin(); it != _channels.end(); ++it) {
         delete it->second;
     }
 }
@@ -233,6 +234,7 @@ bool Server::handleClientData(size_t index)
 
     if (close_client)
     {
+        handleQuit(client, std::vector<std::string>());
         _clients.erase(fd);
         close(fd);
         delete client;
@@ -287,12 +289,16 @@ void Server::run()
 
 void Server::handleClientMessage(Client *client, const std::string &msg)
 {
-    Operation operation(msg);
+    if (msg.empty()) return;
 
     std::cout << "From " << client->getFd() << " " << msg << std::endl;
     CommandFunc command = operation.getCommandFunc();
-    if (command)
+
+    if (command) {
         command(client, operation, this);
+    } else {
+        client->sendMessage(std::string("421 * :Unknown command"));
+    }
 }
 
 Channel* Server::createChannel(const std::string& name) {
