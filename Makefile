@@ -11,18 +11,18 @@ SRCS = \
     src/class_cpp/Client.cpp \
     src/class_cpp/Operation.cpp \
     src/utils.cpp \
-    src/class_cpp/command/nick.cpp \
-    src/class_cpp/command/pass.cpp \
-    src/class_cpp/command/user.cpp \
-    src/class_cpp/command/join.cpp \
-    src/class_cpp/command/part.cpp \
-    src/class_cpp/command/privmsg.cpp \
-    src/class_cpp/command/notice.cpp \
-    src/class_cpp/command/quit.cpp \
-    src/class_cpp/command/kick.cpp \
-    src/class_cpp/command/invite.cpp \
-    src/class_cpp/command/topic.cpp \
-    src/class_cpp/command/mode.cpp
+    src/command/nick.cpp \
+    src/command/pass.cpp \
+    src/command/user.cpp \
+    src/command/join.cpp \
+    src/command/part.cpp \
+    src/command/privmsg.cpp \
+    src/command/notice.cpp \
+    src/command/quit.cpp \
+    src/command/kick.cpp \
+    src/command/invite.cpp \
+    src/command/topic.cpp \
+    src/command/mode.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 

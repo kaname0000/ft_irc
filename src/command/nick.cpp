@@ -4,15 +4,6 @@
 #include "../../includes/class_hpp/Operation.hpp"
 #include "../../includes/utils.hpp"
 
-// TODO: 各コマンドの実装は後で埋める。現在はサーバー起動確認用のスタブ。
-void join(Client *, Operation &, Server *) {}
-void part(Client *, Operation &, Server *) {}
-void quit(Client *, Operation &, Server *) {}
-void kick(Client *, Operation &, Server *) {}
-void invite(Client *, Operation &, Server *) {}
-void topic(Client *, Operation &, Server *) {}
-void mode(Client *, Operation &, Server *) {}
-
 // NICK parameter
 
 void nick(Client *client, Operation &operation, Server *server)
