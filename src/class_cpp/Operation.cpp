@@ -45,7 +45,7 @@ static COMMAND stringToCommand(const std::string &token)
 }
 
 Operation::Operation(const std::string &message)
-    : _command(), _parameter(), _trailing_parameter("")
+    : _command(UNKNOWN), _parameter(), _trailing_parameter("")
 {
     std::stringstream ss(message);
     std::string token;
