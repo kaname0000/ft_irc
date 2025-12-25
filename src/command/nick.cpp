@@ -4,6 +4,11 @@
 #include "../../includes/class_hpp/Operation.hpp"
 #include "../../includes/utils.hpp"
 
+<<<<<<< HEAD:src/commad/nick.cpp
+=======
+// NICK parameter
+
+>>>>>>> origin/main:src/command/nick.cpp
 void nick(Client *client, Operation &operation, Server *server)
 {
     (void)server;

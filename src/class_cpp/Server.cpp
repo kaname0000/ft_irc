@@ -234,7 +234,9 @@ bool Server::handleClientData(size_t index)
 
     if (close_client)
     {
-        handleQuit(client, std::vector<std::string>());
+        Operation empty_op("");
+        quit(client, empty_op, this);
+
         _clients.erase(fd);
         close(fd);
         delete client;
@@ -290,6 +292,8 @@ void Server::run()
 void Server::handleClientMessage(Client *client, const std::string &msg)
 {
     if (msg.empty()) return;
+
+    Operation operation(msg);
 
     std::cout << "From " << client->getFd() << " " << msg << std::endl;
 	Operation operation(msg);
