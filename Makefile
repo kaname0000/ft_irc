@@ -5,18 +5,24 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -pedantic
 INCLUDES = -Iincludes/class -Iincludes
 
 SRCS = \
-	src/main.cpp \
-	src/class_cpp/Server.cpp \
-	src/class_cpp/Channel.cpp \
-	src/class_cpp/Client.cpp \
-	src/class_cpp/Operation.cpp \
-	src/class_cpp/ServerCommands.cpp \
-	src/commad/nick.cpp \
-	src/commad/pass.cpp \
-	src/commad/privmsg.cpp \
-	src/commad/user.cpp \
-	src/commad/notice.cpp \
-	src/utils.cpp
+    src/main.cpp \
+    src/class_cpp/Server.cpp \
+    src/class_cpp/Channel.cpp \
+    src/class_cpp/Client.cpp \
+    src/class_cpp/Operation.cpp \
+    src/utils.cpp \
+    src/command/nick.cpp \
+    src/command/pass.cpp \
+    src/command/user.cpp \
+    src/command/join.cpp \
+    src/command/part.cpp \
+    src/command/privmsg.cpp \
+    src/command/notice.cpp \
+    src/command/quit.cpp \
+    src/command/kick.cpp \
+    src/command/invite.cpp \
+    src/command/topic.cpp \
+    src/command/mode.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
