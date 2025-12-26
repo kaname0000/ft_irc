@@ -26,7 +26,8 @@ void notice(Client *client, Operation &op, Server *server)
             client->sendMessage("403 " + target + " :No such channel");
             return;
         }
-        channel->broadcast(message);
+        std::string prefix = client->getClientdata();
+        channel->broadcast(prefix + " NOTICE " + target + " :" + message, client->getFd());
     }
     else
     {

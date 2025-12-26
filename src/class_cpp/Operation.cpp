@@ -12,7 +12,10 @@ CommandFunc COMMANDFUNC[] = {
     topic,
     mode,
     pass,
+    ping,
     notice,
+    cap,
+    who,
 };
 
 static COMMAND stringToCommand(const std::string &token)
@@ -39,8 +42,14 @@ static COMMAND stringToCommand(const std::string &token)
         return MODE;
     if (token == "PASS")
         return PASS;
+    if (token == "PING")
+        return PING;
     if(token == "NOTICE")
         return NOTICE;
+    if (token == "CAP")
+        return CAP;
+    if (token == "WHO" || token == "WHOIS")
+        return WHO;
     return UNKNOWN;
 }
 
@@ -79,7 +88,7 @@ const std::string &Operation::getTrailing() const { return _trailing_parameter; 
 
 CommandFunc Operation::getCommandFunc() const
 {
-    if (_command >= NICK && _command <= NOTICE)
+    if (_command >= NICK && _command <= WHO)
         return COMMANDFUNC[_command];
     return NULL;
 }

@@ -14,6 +14,16 @@ void mode(Client *client, Operation &operation, Server *server) {
         return;
     }
 
+    // bモード（banリスト）問い合わせ/設定は未対応なので無視
+    if (params.size() >= 2 && params[1].find('b') != std::string::npos) {
+        return;
+    }
+
+    // 自分自身への MODE は無視（irssi 接続直後の MODE <nick> +i 対策）
+    if (params[0] == client->getNickname()) {
+        return;
+    }
+
     Channel *channel = server->getChannel(params[0]);
     if (!channel) {
         client->sendMessage("403 " + client->getNickname() + " " + params[0] + " :No such channel");
@@ -21,6 +31,13 @@ void mode(Client *client, Operation &operation, Server *server) {
     }
 
     if (params.size() == 1) {
+        // 現在のチャンネルモードを返す
+        std::string modes = "+";
+        if (channel->getMode('i')) modes += "i";
+        if (channel->getMode('t')) modes += "t";
+        if (channel->getMode('k')) modes += "k";
+        if (channel->getMode('l')) modes += "l";
+        client->sendMessage("324 " + client->getNickname() + " " + channel->getName() + " " + modes);
         return;
     }
 

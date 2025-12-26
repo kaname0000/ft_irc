@@ -12,8 +12,9 @@ static bool isValidChannelName(const std::string &name) {
 void join(Client *client, Operation &operation, Server *server) {
     const std::vector<std::string> &params = operation.getParameter();
 
-    if (!client->isRegistered()) {
-        client->sendMessage("451 * :You have not registered");
+    // 登録済みかをフラグではなく実際の状態で判定
+    if (!(client->isAuthenticated() && client->isRegisteredNickname() && client->isRegisteredUsername())) {
+        client->sendMessage("451 " + client->getNickname() + " JOIN :You have not registered");
         return;
     }
     if (params.empty()) {

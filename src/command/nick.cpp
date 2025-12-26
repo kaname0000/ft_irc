@@ -4,15 +4,17 @@
 #include "../../includes/class_hpp/Operation.hpp"
 #include "../../includes/utils.hpp"
 
-<<<<<<< HEAD:src/commad/nick.cpp
-=======
 // NICK parameter
 
->>>>>>> origin/main:src/command/nick.cpp
 void nick(Client *client, Operation &operation, Server *server)
 {
     (void)server;
     std::vector<std::string> param = operation.getParameter();
+
+    if (!client->isAuthenticated()) {
+        client->sendMessage(":server 451 * NICK :You have not registered (PASS required)");
+        return;
+    }
 
     if (param.size() != 1) {
         client->sendMessage(":server 431 " + client->getNickname() + " :No nickname given");
@@ -27,10 +29,19 @@ void nick(Client *client, Operation &operation, Server *server)
         return;
     }
 
-    std::string msg = ":" + client->getNickname() + " NICK :" + newNickname;
-    client->sendMessage(msg);
-
+    // まずニックネームをセットしてから通知する
     client->setNickname(newNickname);
     client->setRegisteredNickname(true);
+
+    if (client->isAuthenticated() && client->isRegisteredNickname() && client->isRegisteredUsername() && !client->isRegistered()) {
+        client->setRegistered(true);
+        client->sendMessage(":server.example.com 001 " + newNickname + " :Welcome to the Internet Relay Network " + client->getClientdata());
+    }
+
+    std::string prefix = client->getNickname();
+    if (!client->getUsername().empty() && !client->getHostname().empty())
+        prefix += "!" + client->getUsername() + "@" + client->getHostname();
+    std::string msg = ":" + prefix + " NICK :" + newNickname;
+    client->sendMessage(msg);
 
 }

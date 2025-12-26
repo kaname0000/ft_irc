@@ -296,7 +296,6 @@ void Server::handleClientMessage(Client *client, const std::string &msg)
     Operation operation(msg);
 
     std::cout << "From " << client->getFd() << " " << msg << std::endl;
-	Operation operation(msg);
     CommandFunc command = operation.getCommandFunc();
 
     if (command) {

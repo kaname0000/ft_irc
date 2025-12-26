@@ -27,7 +27,8 @@ void privmsg(Client *client, Operation &op, Server *server)
             client->sendMessage("403 " + target + " :No such channel"); // ERR_NOSUCHCHANNEL
             return;
         }
-        channel->broadcast(message);
+        std::string prefix = client->getClientdata();
+        channel->broadcast(prefix + " PRIVMSG " + target + " :" + message, client->getFd());
     }
     else
     {

@@ -11,6 +11,11 @@
 void user(Client *client, Operation &operation, Server *server)
 {
     (void)server;
+    if (!client->isAuthenticated())
+    {
+        client->sendMessage(":server.example.com 451 * USER :You have not registered (PASS required)");
+        return;
+    }
     if (client->isRegisteredUsername())
     {
         client->sendMessage(":server.example.com 462 " + client->getNickname() + " :Unauthorized command (already registered)");
@@ -37,6 +42,8 @@ void user(Client *client, Operation &operation, Server *server)
         std::string user = client->getUsername();
         std::string host = client->getHostname();
 
+        if (!client->isRegistered())
+            client->setRegistered(true);
         client->sendMessage(":server.example.com 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host);
     }
 }

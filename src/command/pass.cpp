@@ -7,6 +7,11 @@
 
 void pass(Client *client, Operation &operation, Server *server)
 {
+    // PASS must be the first authentication step; reject if nick/user already set
+    if (client->isRegisteredNickname() || client->isRegisteredUsername()) {
+        client->sendMessage(":server 462 " + (client->getNickname().empty() ? "*" : client->getNickname()) + " :Unauthorized command (already registered)");
+        return;
+    }
     if (client->isAuthenticated()) {
         client->sendMessage(":server 462 " + (client->getNickname().empty() ? "*" : client->getNickname()) + " :Unauthorized command (already registered)");
         return;
@@ -26,6 +31,10 @@ void pass(Client *client, Operation &operation, Server *server)
 
     client->setAuthenticated(true);
 
-    if (client->isAuthenticated() && client->isRegisteredUsername())
-            client->sendMessage(":server 001 " + client->getNickname() + " :Welcome to the Internet Relay Network " + client->getNickname() + "!" + client->getUsername() + "@" + client->getHostname());
+    if (client->isAuthenticated() && client->isRegisteredUsername() && client->isRegisteredNickname())
+    {
+        if (!client->isRegistered())
+            client->setRegistered(true);
+        client->sendMessage(":server 001 " + client->getNickname() + " :Welcome to the Internet Relay Network " + client->getNickname() + "!" + client->getUsername() + "@" + client->getHostname());
+    }
 }
