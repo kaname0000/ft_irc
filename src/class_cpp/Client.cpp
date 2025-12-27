@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:24:59 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:25:00 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/class_hpp/Client.hpp"
 
 #include <sys/types.h>
@@ -45,14 +57,13 @@ void Client::appendReceiveBuffer(const std::string &data)
 
 std::string Client::extractCommand()
 {
-    // Accept both IRC-standard CRLF and a lone LF (e.g., from nc) as terminators
     std::string::size_type pos = _receive_buffer.find("\n");
     if (pos == std::string::npos)
         return "";
 
     std::string cmd = _receive_buffer.substr(0, pos);
     if (!cmd.empty() && cmd[cmd.size() - 1] == '\r')
-        cmd.erase(cmd.size() - 1); // drop trailing CR if present
+        cmd.erase(cmd.size() - 1);
 
     _receive_buffer.erase(0, pos + 1);
     return cmd;
@@ -80,7 +91,6 @@ bool Client::flushSend()
         ssize_t n = ::send(_fd, _send_buffer.c_str(), _send_buffer.size(), 0);
         if (n > 0)
         {
-            // std::cout << "send msg\n";
             _send_buffer.erase(0, static_cast<size_t>(n));
             continue;
         }

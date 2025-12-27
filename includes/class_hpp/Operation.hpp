@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Operation.hpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:24:24 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:24:25 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef OPERATION_HPP
 #define OPERATION_HPP
 
@@ -9,8 +21,6 @@
 class Server;
 class Client;
 class Operation;
-
-// COMMAND parameter1 parameter2 ... :trailing_parameter
 
 enum COMMAND
 {

@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mode.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:25:45 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:25:46 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../includes/class_hpp/Server.hpp"
 #include "../../includes/class_hpp/Client.hpp"
@@ -14,12 +25,10 @@ void mode(Client *client, Operation &operation, Server *server) {
         return;
     }
 
-    // bモード（banリスト）問い合わせ/設定は未対応なので無視
     if (params.size() >= 2 && params[1].find('b') != std::string::npos) {
         return;
     }
 
-    // 自分自身への MODE は無視（irssi 接続直後の MODE <nick> +i 対策）
     if (params[0] == client->getNickname()) {
         return;
     }
@@ -31,7 +40,6 @@ void mode(Client *client, Operation &operation, Server *server) {
     }
 
     if (params.size() == 1) {
-        // 現在のチャンネルモードを返す
         std::string modes = "+";
         if (channel->getMode('i')) modes += "i";
         if (channel->getMode('t')) modes += "t";
@@ -49,6 +57,10 @@ void mode(Client *client, Operation &operation, Server *server) {
     std::string modes = params[1];
     bool active = true;
     size_t p_idx = 2;
+    std::string broadcastParams = params[1];
+    for (size_t i = 2; i < params.size(); ++i) {
+        broadcastParams += " " + params[i];
+    }
 
     for (size_t i = 0; i < modes.length(); ++i) {
         if (modes[i] == '+') { active = true; continue; }
@@ -84,5 +96,5 @@ void mode(Client *client, Operation &operation, Server *server) {
                 break;
         }
     }
-    channel->broadcast(":" + client->getNickname() + " MODE " + channel->getName() + " " + modes);
+    channel->broadcast(":" + client->getNickname() + " MODE " + channel->getName() + " " + broadcastParams);
 }

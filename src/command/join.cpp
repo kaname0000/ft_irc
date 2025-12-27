@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   join.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:25:32 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:25:33 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../includes/class_hpp/Server.hpp"
 #include "../../includes/class_hpp/Client.hpp"
@@ -12,7 +23,6 @@ static bool isValidChannelName(const std::string &name) {
 void join(Client *client, Operation &operation, Server *server) {
     const std::vector<std::string> &params = operation.getParameter();
 
-    // 登録済みかをフラグではなく実際の状態で判定
     if (!(client->isAuthenticated() && client->isRegisteredNickname() && client->isRegisteredUsername())) {
         client->sendMessage("451 " + client->getNickname() + " JOIN :You have not registered");
         return;

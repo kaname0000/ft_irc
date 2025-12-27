@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Operation.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:25:04 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:25:05 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/class_hpp/Operation.hpp"
 
 CommandFunc COMMANDFUNC[] = {
@@ -71,7 +83,8 @@ Operation::Operation(const std::string &message)
             std::getline(ss, rest);
             if (!rest.empty() && rest[0] == ' ')
                 rest.erase(0, 1);
-            _trailing_parameter += rest;
+            if (!rest.empty())
+                _trailing_parameter += " " + rest;
             return;
         }
         _parameter.push_back(token);

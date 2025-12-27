@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   notice.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:25:54 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:25:55 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/class_hpp/Server.hpp"
 #include "../../includes/class_hpp/Client.hpp"
 #include "../../includes/class_hpp/Channel.hpp"

@@ -1,15 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:24:54 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:24:55 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../includes/class_hpp/Channel.hpp"
-#include "../../includes/class_hpp/Client.hpp" // Clientクラスの定義が必要
+#include "../../includes/class_hpp/Client.hpp"
 
 Channel::Channel(const std::string &name)
     : _name(name), _topic(""), _key(""), _limit(-1)
 {
-    _mode_flags['i'] = false; // 招待制
-    _mode_flags['t'] = true;  // トピックオペレーター制限
-    _mode_flags['k'] = false; // キー（パスワード）設定
-    _mode_flags['o'] = false; // 常にオペレーター
-    _mode_flags['l'] = false; // ユーザー数制限
+    _mode_flags['i'] = false;
+    _mode_flags['t'] = true;
+    _mode_flags['k'] = false;
+    _mode_flags['o'] = false;
+    _mode_flags['l'] = false;
 }
 
 Channel::~Channel()
@@ -70,15 +81,6 @@ bool Channel::setMode(char mode, bool enable)
     return false;
 }
 
-// void Channel::broadcast(const std::string& msg, int exclude_fd) {
-//     for (std::map<int, Client*>::iterator it = _members.begin(); it != _members.end(); ++it) {
-//         Client* member = it->second;
-//         if (member->getFd() != exclude_fd) {
-//             member->sendReply(msg);
-//         }
-//     }
-// }
-
 void Channel::broadcast(const std::string &msg, int exclude_fd)
 {
     for (std::map<int, Client *>::iterator it = _members.begin(); it != _members.end(); ++it)
@@ -90,33 +92,6 @@ void Channel::broadcast(const std::string &msg, int exclude_fd)
         }
     }
 }
-
-// void Channel::sendNamesReply(Client *client) const
-// {
-//     std::string names_list;
-
-//     for (std::map<int, Client *>::const_iterator it = _members.begin(); it != _members.end(); ++it)
-//     {
-//         Client *member = it->second;
-//         if (isOperator(member->getFd()))
-//         {
-//             names_list += "@";
-//         }
-//         names_list += member->getNickname();
-//         names_list += " ";
-//     }
-
-//     if (!names_list.empty())
-//     {
-//         names_list.erase(names_list.size() - 1);
-//     }
-
-//     std::string reply_353 = "353 " + client->getNickname() + " = " + _name + " :" + names_list;
-//     client->sendReply(reply_353);
-
-//     std::string reply_366 = "366 " + client->getNickname() + " " + _name + " :End of /NAMES list";
-//     client->sendReply(reply_366);
-// }
 
 void Channel::sendNamesReply(Client *client) const
 {
@@ -144,31 +119,3 @@ void Channel::sendNamesReply(Client *client) const
     std::string reply_366 = "366 " + client->getNickname() + " " + _name + " :End of /NAMES list";
     client->sendMessage(reply_366);
 }
-
-// // --- 通信 ---
-// void Channel::broadcast(const std::string &msg, int exclude_fd)
-// {
-//     // IRCプロトコルに合わせ、メッセージ末尾に \r\n がない場合は付与する処理を
-//     // Client::sendMessage 側で行っていることを前提としています
-//     for (std::map<int, Client *>::iterator it = _members.begin(); it != _members.end(); ++it)
-//     {
-//         if (it->first != exclude_fd)
-//             it->second->sendMessage(msg);
-//     }
-// }
-
-// void Channel::sendNamesReply(Client *client) const
-// {
-//     std::string names_list;
-//     for (std::map<int, Client *>::const_iterator it = _members.begin(); it != _members.end(); ++it)
-//     {
-//         if (isOperator(it->first)) names_list += "@";
-//         names_list += it->second->getNickname() + " ";
-//     }
-//     if (!names_list.empty()) names_list.erase(names_list.size() - 1);
-
-//     // 数値リプライ 353 (RPL_NAMEREPLY)
-//     client->sendMessage("353 " + client->getNickname() + " = " + _name + " :" + names_list);
-//     // 数値リプライ 366 (RPL_ENDOFNAMES)
-//     client->sendMessage("366 " + client->getNickname() + " " + _name + " :End of /NAMES list");
-// }

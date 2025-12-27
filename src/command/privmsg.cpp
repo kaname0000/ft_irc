@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   privmsg.cpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:26:12 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:26:13 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/class_hpp/Server.hpp"
 #include "../../includes/class_hpp/Client.hpp"
 #include "../../includes/class_hpp/Channel.hpp"
@@ -20,11 +32,15 @@ void privmsg(Client *client, Operation &op, Server *server)
 
     if (target[0] == '#')
     {
-        // to channel
         Channel *channel = server->getChannel(target);
         if (!channel)
         {
-            client->sendMessage("403 " + target + " :No such channel"); // ERR_NOSUCHCHANNEL
+            client->sendMessage("403 " + target + " :No such channel");
+            return;
+        }
+        if (!channel->isMember(client->getFd()))
+        {
+            client->sendMessage("442 " + client->getNickname() + " " + target + " :You're not on that channel");
             return;
         }
         std::string prefix = client->getClientdata();
@@ -32,11 +48,10 @@ void privmsg(Client *client, Operation &op, Server *server)
     }
     else
     {
-        // to client
         Client *dest = server->getClient(target);
         if (!dest)
         {
-            client->sendMessage("401 " + target + " :No such nick"); // ERR_NOSUCHNICK
+            client->sendMessage("401 " + target + " :No such nick");
             return;
         }
         dest->sendMessage(client->getClientdata() + " PRIVMSG " + target + " :" + message);
