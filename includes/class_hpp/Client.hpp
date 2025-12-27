@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:24:17 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:24:30 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
@@ -53,7 +64,6 @@ public:
     void queueMessage(const std::string &msg);
     bool flushSend();
 
-    // Buffer Operations(カナメさん用)
     void appendReceiveBuffer(const std::string &data);
     std::string extractCommand();
 };

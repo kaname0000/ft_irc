@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/kawai/OneDrive/デスクトップ/ft_irc/src/class",
-      "program": "c:/Users/kawai/OneDrive/デスクトップ/ft_irc/src/class/build/Debug/outDebug",
+      "cwd": "c:/Users/kawai/OneDrive/デスクトップ/ft_irc/src",
+      "program": "c:/Users/kawai/OneDrive/デスクトップ/ft_irc/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

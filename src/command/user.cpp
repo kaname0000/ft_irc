@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   user.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:26:32 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:26:33 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/class_hpp/Server.hpp"
 #include "../../includes/class_hpp/Client.hpp"
 #include "../../includes/class_hpp/Channel.hpp"
@@ -6,11 +18,14 @@
 
 #define INT16_MAX 32767
 
-// USER username
-
 void user(Client *client, Operation &operation, Server *server)
 {
     (void)server;
+    if (!client->isAuthenticated())
+    {
+        client->sendMessage(":server.example.com 451 * USER :You have not registered (PASS required)");
+        return;
+    }
     if (client->isRegisteredUsername())
     {
         client->sendMessage(":server.example.com 462 " + client->getNickname() + " :Unauthorized command (already registered)");
@@ -37,6 +52,8 @@ void user(Client *client, Operation &operation, Server *server)
         std::string user = client->getUsername();
         std::string host = client->getHostname();
 
+        if (!client->isRegistered())
+            client->setRegistered(true);
         client->sendMessage(":server.example.com 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "!" + user + "@" + host);
     }
 }

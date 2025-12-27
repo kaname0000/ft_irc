@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Operation.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/27 15:25:04 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:25:05 by sykawai          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/class_hpp/Operation.hpp"
 
 CommandFunc COMMANDFUNC[] = {
@@ -12,7 +24,10 @@ CommandFunc COMMANDFUNC[] = {
     topic,
     mode,
     pass,
+    ping,
     notice,
+    cap,
+    who,
 };
 
 static COMMAND stringToCommand(const std::string &token)
@@ -39,13 +54,19 @@ static COMMAND stringToCommand(const std::string &token)
         return MODE;
     if (token == "PASS")
         return PASS;
+    if (token == "PING")
+        return PING;
     if(token == "NOTICE")
         return NOTICE;
+    if (token == "CAP")
+        return CAP;
+    if (token == "WHO" || token == "WHOIS")
+        return WHO;
     return UNKNOWN;
 }
 
 Operation::Operation(const std::string &message)
-    : _command(), _parameter(), _trailing_parameter("")
+    : _command(UNKNOWN), _parameter(), _trailing_parameter("")
 {
     std::stringstream ss(message);
     std::string token;
@@ -62,7 +83,8 @@ Operation::Operation(const std::string &message)
             std::getline(ss, rest);
             if (!rest.empty() && rest[0] == ' ')
                 rest.erase(0, 1);
-            _trailing_parameter += rest;
+            if (!rest.empty())
+                _trailing_parameter += " " + rest;
             return;
         }
         _parameter.push_back(token);
@@ -79,7 +101,7 @@ const std::string &Operation::getTrailing() const { return _trailing_parameter; 
 
 CommandFunc Operation::getCommandFunc() const
 {
-    if (_command >= NICK && _command <= NOTICE)
+    if (_command >= NICK && _command <= WHO)
         return COMMANDFUNC[_command];
     return NULL;
 }

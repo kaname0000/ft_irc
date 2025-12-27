@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.hpp                                          :+:      :+:    :+:   */
+/*   cap.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/27 15:24:47 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/27 15:24:48 by sykawai          ###   ########.fr       */
+/*   Created: 2025/12/27 15:25:18 by sykawai           #+#    #+#             */
+/*   Updated: 2025/12/27 15:25:19 by sykawai          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#include "../../includes/class_hpp/Server.hpp"
+#include "../../includes/class_hpp/Client.hpp"
+#include "../../includes/class_hpp/Operation.hpp"
 
-#include <iostream>
-
-bool isValidName(const std::string &name, const std::string allowedSymbols, size_t maxNameSize);
-
-#endif
+void cap(Client *client, Operation &operation, Server *server)
+{
+    (void)client;
+    (void)operation;
+    (void)server;
+}
