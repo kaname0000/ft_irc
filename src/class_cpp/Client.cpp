@@ -6,7 +6,7 @@
 /*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 15:24:59 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/27 15:25:00 by sykawai          ###   ########.fr       */
+/*   Updated: 2025/12/28 15:43:29 by sykawai          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,8 +87,7 @@ bool Client::flushSend()
 {
     while (!_send_buffer.empty())
     {
-        std::cout << _send_buffer << std::endl;
-        ssize_t n = ::send(_fd, _send_buffer.c_str(), _send_buffer.size(), 0);
+        ssize_t n = ::send(_fd, _send_buffer.c_str(), _send_buffer.size(), MSG_NOSIGNAL);
         if (n > 0)
         {
             _send_buffer.erase(0, static_cast<size_t>(n));
@@ -106,5 +105,4 @@ bool Client::flushSend()
 void Client::sendMessage(const std::string &msg)
 {
     queueMessage(msg);
-    flushSend();
 }

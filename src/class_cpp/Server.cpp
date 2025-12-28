@@ -6,7 +6,7 @@
 /*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 15:25:11 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/27 15:25:12 by sykawai          ###   ########.fr       */
+/*   Updated: 2025/12/27 20:22:33 by sykawai          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,7 @@ void Server::initSocket()
         throw std::runtime_error(std::string("setsockopt() failed: ") + std::strerror(errno));
     }
 
-    int flags = fcntl(_listen_fd, F_GETFL, 0);
-    if (flags == -1 || fcntl(_listen_fd, F_SETFL, flags | O_NONBLOCK) == -1)
+    if (fcntl(_listen_fd, F_SETFL, O_NONBLOCK) == -1)
     {
         close(_listen_fd);
         throw std::runtime_error(std::string("fcntl() failed: ") + std::strerror(errno));
@@ -189,8 +188,7 @@ void Server::acceptNewClient()
             throw std::runtime_error(std::string("accept() failed: ") + std::strerror(errno));
         }
 
-        int flags = fcntl(client_fd, F_GETFL, 0);
-        if (flags == -1 || fcntl(client_fd, F_SETFL, flags | O_NONBLOCK) == -1)
+        if (fcntl(client_fd, F_SETFL, O_NONBLOCK) == -1)
         {
             close(client_fd);
             throw std::runtime_error(std::string("fcntl() failed on client: ") + std::strerror(errno));
