@@ -16,24 +16,36 @@
 #include "../../includes/class_hpp/Operation.hpp"
 #include "../../includes/utils.hpp"
 
+#include <algorithm>
+
+std::string toUpper(std::string s) {
+    for (size_t i = 0; i < s.length(); i++) {
+        s[i] = std::toupper(static_cast<unsigned char>(s[i]));
+    }
+    return s;
+}
+
 bool same_name(const std::map<int, Client*>& clients,
                const std::string& newNickname,
                const Client* self)
 {
+    std::string newUpper = toUpper(newNickname);
+
     for (std::map<int, Client*>::const_iterator it = clients.begin();
          it != clients.end();
          ++it)
     {
         if (it->second == self)
             continue;
-        if (it->second && it->second->getNickname() == newNickname)
-            return true;
+
+        if (it->second) {
+            if (toUpper(it->second->getNickname()) == newUpper) {
+                return true;
+            }
+        }
     }
     return false;
 }
-
-
-
 
 void nick(Client *client, Operation &operation, Server *server)
 {
