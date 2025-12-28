@@ -258,7 +258,7 @@ bool Server::handleClientData(size_t index)
 
 void Server::run()
 {
-    while (true)
+    while (g_running)
     {
         refreshPollEvents();
         int ret = poll(&_pfds[0], _pfds.size(), -1);

@@ -6,7 +6,7 @@
 /*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 15:26:43 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/27 15:26:44 by sykawai          ###   ########.fr       */
+/*   Updated: 2025/12/28 16:27:05 by sykawai          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,13 @@
 #include <iostream>
 #include <sstream>
 #include <csignal>
+
+volatile sig_atomic_t g_running = 1;
+
+static void handle_sigint(int)
+{
+    g_running = 0;
+}
 
 static bool isValidPort(const std::string &s, int &port)
 {
@@ -32,6 +39,7 @@ static bool isValidPort(const std::string &s, int &port)
 int main(int argc, char **argv)
 {
     std::signal(SIGPIPE, SIG_IGN);
+    std::signal(SIGINT, handle_sigint);
     if (argc != 3)
     {
         std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;

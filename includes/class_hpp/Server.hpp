@@ -19,6 +19,9 @@
 #include <iostream>
 #include <algorithm>
 #include <poll.h>
+#include <csignal>
+
+extern volatile sig_atomic_t g_running;
 
 class Client;
 class Channel;
