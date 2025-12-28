@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*   By: okaname <okaname@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 15:25:49 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/28 15:29:21 by sykawai          ###   ########.fr       */
+/*   Updated: 2025/12/28 17:14:03 by okaname          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,27 @@
 #include "../../includes/class_hpp/Operation.hpp"
 #include "../../includes/utils.hpp"
 
+bool same_name(const std::map<int, Client*>& clients,
+               const std::string& newNickname,
+               const Client* self)
+{
+    for (std::map<int, Client*>::const_iterator it = clients.begin();
+         it != clients.end();
+         ++it)
+    {
+        if (it->second == self)
+            continue;
+        if (it->second && it->second->getNickname() == newNickname)
+            return true;
+    }
+    return false;
+}
+
+
+
+
 void nick(Client *client, Operation &operation, Server *server)
 {
-    (void)server;
     std::vector<std::string> param = operation.getParameter();
 
     if (!client->isAuthenticated()) {
@@ -36,6 +54,12 @@ void nick(Client *client, Operation &operation, Server *server)
 
     if (!isValidName(newNickname, "-_[]\\`^{}", 9)) {
         client->sendMessage(":server 432 " + oldNickname + " " + newNickname + " :Erroneous nickname");
+        return;
+    }
+    // (void)server;
+    if (same_name(server->getClients(), newNickname, client))
+    {
+        client->sendMessage("433 * " + newNickname + " :Nickname is already in use");
         return;
     }
 

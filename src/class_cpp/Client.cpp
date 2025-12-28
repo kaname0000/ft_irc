@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*   By: okaname <okaname@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 15:24:59 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/28 15:43:29 by sykawai          ###   ########.fr       */
+/*   Updated: 2025/12/28 16:45:58 by okaname          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ std::string Client::extractCommand()
         cmd.erase(cmd.size() - 1);
 
     _receive_buffer.erase(0, pos + 1);
+    std::cout << cmd << std::endl;
     return cmd;
 }
 

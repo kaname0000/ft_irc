@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
+/*   By: okaname <okaname@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 15:26:12 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/27 15:26:13 by sykawai          ###   ########.fr       */
+/*   Updated: 2025/12/28 16:38:28 by okaname          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,6 @@ void privmsg(Client *client, Operation &op, Server *server)
             return;
         }
         dest->sendMessage(client->getClientdata() + " PRIVMSG " + target + " :" + message);
+        std::cout << message << std::endl;
     }
 }
