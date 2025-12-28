@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <csignal>
 
 static bool isValidPort(const std::string &s, int &port)
 {
@@ -30,6 +31,7 @@ static bool isValidPort(const std::string &s, int &port)
 
 int main(int argc, char **argv)
 {
+    std::signal(SIGPIPE, SIG_IGN);
     if (argc != 3)
     {
         std::cerr << "Usage: " << argv[0] << " <port> <password>" << std::endl;

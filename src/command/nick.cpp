@@ -6,7 +6,7 @@
 /*   By: sykawai <sykawai@student.42tokyo.jp>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 15:25:49 by sykawai           #+#    #+#             */
-/*   Updated: 2025/12/27 15:25:50 by sykawai          ###   ########.fr       */
+/*   Updated: 2025/12/28 15:29:21 by sykawai          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void nick(Client *client, Operation &operation, Server *server)
         return;
     }
 
-    client->setNickname(newNickname);
     client->setRegisteredNickname(true);
 
     if (client->isAuthenticated() && client->isRegisteredNickname() && client->isRegisteredUsername() && !client->isRegistered()) {
@@ -52,5 +51,5 @@ void nick(Client *client, Operation &operation, Server *server)
         prefix += "!" + client->getUsername() + "@" + client->getHostname();
     std::string msg = ":" + prefix + " NICK :" + newNickname;
     client->sendMessage(msg);
-
+	client->setNickname(newNickname);
 }
